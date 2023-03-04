@@ -10,10 +10,18 @@
 // MAP
 //
 
-float degToRad(int a) { return a*M_PI/180.0;}
-int FixAng(int a){ if(a>359){ a-=360;} if(a<0){ a+=360;} return a;}
+float degToRad(int a)
+{ 
+    return a * M_PI/180.0;
+}
 
-float px, py, pdx, pdy, pa;
+int FixAng(int a){
+    if(a > 359)
+        a -= 360;
+    if( a < 0 )
+        a += 360; 
+    return a;
+}
 
 int mapX = 8, mapY = 8, mapS = 64;
 int map[] =
@@ -85,15 +93,15 @@ void closeProgram(SDL_Window **window, SDL_Renderer **renderer)
 void ClearBackground(SDL_Renderer **Renderer)
 {
     SDL_SetRenderDrawColor(*Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE); //Set background color
-    SDL_RenderClear(*Renderer); //I dont know yet
+    SDL_RenderClear(*Renderer);
 }
-void DrawPlayer(SDL_Renderer **Renderer)
+void DrawPlayer(SDL_Renderer **Renderer, float px, float py, float pdx, float pdy, float pa)
 {
     SDL_Rect sdlRect = {px - 10 , py -10, 20, 20};
 
     SDL_SetRenderDrawColor(*Renderer, 255, 255, 0, 255);
     SDL_RenderDrawPoint(*Renderer, px, py);
-    SDL_RenderDrawLine(*Renderer, px, py, px+pdx*20, py+pdy*20);
+    SDL_RenderDrawLine(*Renderer, px, py, px+pdx*50, py+pdy*50);
     SDL_RenderFillRect(*Renderer, &sdlRect);
 }
 
@@ -108,6 +116,7 @@ int main(int argc, char *argv[])
     int downArrowDown = 0;
     int rightArrowDown = 0;
     int numPixelsToMovePerFrame = (WIDTH/40)/100;
+    float px, py, pdx, pdy, pa;
 
     //line
     px = WIDTH / 2;
@@ -194,7 +203,7 @@ int main(int argc, char *argv[])
         }
         ClearBackground(&Renderer);
         DrawMap(&Renderer);
-        DrawPlayer(&Renderer);
+        DrawPlayer(&Renderer, px, py, pdx, pdy, pa);
         SDL_RenderPresent(Renderer);
     }
     closeProgram(&Window, &Renderer);
