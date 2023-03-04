@@ -5,9 +5,15 @@
 #define WIDTH 1024
 #define HEIGHT 1024
 #define PI 3.1415926535
+#define PLAYERSPEED 3.5
 //
 // MAP
 //
+
+float degToRad(int a) { return a*M_PI/180.0;}
+int FixAng(int a){ if(a>359){ a-=360;} if(a<0){ a+=360;} return a;}
+
+float px, py, pdx, pdy, pa;
 
 int mapX = 8, mapY = 8, mapS = 64;
 int map[] =
@@ -66,8 +72,6 @@ int init(SDL_Window **window, SDL_Renderer **renderer)
         fprintf(stderr, "Couldn't Create Renderer: %s\n", SDL_GetError());
         return (0);
     }
-    pd_x = cos(p_a) * 5;
-    pd_y = sin(p_a) * 5;
     return (1);
 };
 
@@ -83,9 +87,13 @@ void ClearBackground(SDL_Renderer **Renderer)
     SDL_SetRenderDrawColor(*Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE); //Set background color
     SDL_RenderClear(*Renderer); //I dont know yet
 }
-void DrawPlayer(SDL_Renderer **Renderer, SDL_Rect sdlRect)
+void DrawPlayer(SDL_Renderer **Renderer)
 {
-    SDL_SetRenderDrawColor(*Renderer, 255, 255, 0, SDL_ALPHA_OPAQUE); //Set background color
+    SDL_Rect sdlRect = {px - 10 , py -10, 20, 20};
+
+    SDL_SetRenderDrawColor(*Renderer, 255, 255, 0, 255);
+    SDL_RenderDrawPoint(*Renderer, px, py);
+    SDL_RenderDrawLine(*Renderer, px, py, px+pdx*20, py+pdy*20);
     SDL_RenderFillRect(*Renderer, &sdlRect);
 }
 
@@ -99,12 +107,14 @@ int main(int argc, char *argv[])
     int leftArrowDown = 0;
     int downArrowDown = 0;
     int rightArrowDown = 0;
-    int numPixelsToMovePerFrame = (WIDTH/40)/4;
-    SDL_Rect sdlRect;
-    sdlRect.w = WIDTH/80;
-    sdlRect.h = HEIGHT/80;
-    sdlRect.x = 80;
-    sdlRect.y = 80;
+    int numPixelsToMovePerFrame = (WIDTH/40)/100;
+
+    //line
+    px = WIDTH / 2;
+    py = HEIGHT / 2;
+    pa = 0;
+    pdx = cos(degToRad(pa));
+    pdy = -sin(degToRad(pa));
 
     if(!init(&Window, &Renderer))
     {
@@ -160,41 +170,31 @@ int main(int argc, char *argv[])
         }
         if (upArrowDown)
         {
-            p_x -= pd_x; p_y -= pd_y;
-            sdlRect.y -= numPixelsToMovePerFrame;
+            px += pdx*PLAYERSPEED;
+            py += pdy*PLAYERSPEED;
         }
         if (leftArrowDown)
         {
-            sdlRect.x -= numPixelsToMovePerFrame;
+            pa += PLAYERSPEED;
+            pa = FixAng(pa);
+            pdx = cos(degToRad(pa));
+            pdy = -sin(degToRad(pa));
         }
         if (downArrowDown)
         {
-            sdlRect.y += numPixelsToMovePerFrame;
+            px -= pdx*PLAYERSPEED;
+            py -= pdy*PLAYERSPEED;
         }
         if (rightArrowDown)
         {
-            sdlRect.x += numPixelsToMovePerFrame;
-        }
-        ///Keep Player in the Screen//
-        if (sdlRect.x < 0)
-        {
-            sdlRect.x = 0;
-        }
-        else if (sdlRect.x + sdlRect.w - 1 >= WIDTH)
-        {
-            sdlRect.x = WIDTH - sdlRect.w;
-        }
-        if (sdlRect.y < 0)
-        {
-            sdlRect.y = 0;
-        }
-        else if (sdlRect.y + sdlRect.h - 1 >= HEIGHT)
-        {
-            sdlRect.y = HEIGHT - sdlRect.h;
+            pa -= PLAYERSPEED;
+            pa = FixAng(pa);
+            pdx = cos(degToRad(pa));
+            pdy = -sin(degToRad(pa));
         }
         ClearBackground(&Renderer);
         DrawMap(&Renderer);
-        DrawPlayer(&Renderer, sdlRect);
+        DrawPlayer(&Renderer);
         SDL_RenderPresent(Renderer);
     }
     closeProgram(&Window, &Renderer);
