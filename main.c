@@ -226,6 +226,7 @@ int main(int argc, char *argv[])
     int rightArrowDown = 0;
     int numPixelsToMovePerFrame = (WIDTH/40)/100;
     float px, py, pdx, pdy, pa;
+    float frame1, frame2, fps;
 
     //line
     px = 80;
@@ -286,26 +287,60 @@ int main(int argc, char *argv[])
                 }
             }
         }
+        frame2 = SDL_GetTicks();
+        fps = (frame2 - frame1);
+        frame1 = SDL_GetTicks();
+
+        int xo = 0;
+        if (pdx < 0) {
+            xo = -20;
+        } else {
+            xo = 20;
+        }
+
+        int yo = 0;
+        if (pdy < 0) {
+            yo = -20;
+        } else {
+            yo = 20;
+        }
+
+        int ipx = px / 64.0;
+        int ipx_add_xo = (px + xo) / 64.0;
+        int ipx_sub_xo = (px - xo) / 64.0;
+
+        int ipy = py / 64.0;
+        int ipy_add_yo = (py + yo) / 64.0;
+        int ipy_sub_yo = (py - yo) / 64.0;
+
         if (upArrowDown)
         {
-            px += pdx*PLAYERSPEED;
-            py += pdy*PLAYERSPEED;
+            if (map[ipy * mapX + ipx_add_xo] == 0) {
+                px += pdx * 0.2 * fps;
+            }
+            if (map[ipy_add_yo * mapX + ipx] == 0) {
+                py += pdy * 0.2 * fps;
+            }
         }
         if (leftArrowDown)
         {
-            pa += PLAYERSPEED;
+            pa += 0.2 * fps;
             pa = FixAng(pa);
             pdx = cos(degToRad(pa));
             pdy = -sin(degToRad(pa));
         }
         if (downArrowDown)
         {
-            px -= pdx*PLAYERSPEED;
-            py -= pdy*PLAYERSPEED;
+            if (map[ipy * mapX + ipx_sub_xo] == 0) {
+                px -= pdx * 0.2 * fps;
+            }
+            if (map[ipy_sub_yo * mapX + ipx] == 0) {
+                py -= pdy * 0.2 * fps;
+            }
         }
         if (rightArrowDown)
         {
-            pa -= PLAYERSPEED;
+            pa -= 0.2 * fps;
             pa = FixAng(pa);
             pdx = cos(degToRad(pa));
             pdy = -sin(degToRad(pa));
