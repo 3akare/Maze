@@ -24,14 +24,14 @@ int FixAng(int a){
 }
 
 int mapX = 8, mapY = 8, mapS = 64;
-int map[] =
+int mapW[] =
 {
     1, 1, 1, 1, 1, 1, 1, 1,
-    1, 0, 1, 0, 0, 0, 0, 1,
-    1, 0, 1, 0, 1, 1, 0, 1,
-    1, 0, 1, 1, 1, 1, 0, 1,
-    1, 0, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 1, 0, 1,
+    1, 0, 0, 1, 0, 0, 0, 1,
+    1, 0, 0, 4, 0, 0, 0, 1,
+    1, 0, 0, 1, 0, 0, 0, 1,
+    1, 1, 1, 1, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 2, 0, 1,
     1, 0, 0, 0, 0, 0, 0, 1,
     1, 1, 1, 1, 1, 1, 1, 1,
 };
@@ -218,8 +218,8 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
             mx = (int) (rx) >> 6;
             my = (int) (ry) >> 6;
             mp = my * mapX + mx;
-            if (mp > 0 && mp < mapX * mapY && map[mp] == 1) {
-                vmt = map[mp] -1 ;
+            if (mp > 0 && mp < mapX * mapY && mapW[mp] > 0) {
+                vmt = mapW[mp] -1 ;
                 dof = 8;
                 disV = cos(degToRad(ra)) * (rx - px) - sin(degToRad(ra)) * (ry - py); // hit
             } else {
@@ -255,8 +255,8 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
             mx = (int) (rx) >> 6;
             my = (int) (ry) >> 6;
             mp = my * mapX + mx;
-            if (mp > 0 && mp < mapX * mapY && map[mp] == 1) {
-                hmt=map[mp]-1;
+            if (mp > 0 && mp < mapX * mapY && mapW[mp] > 0) {
+                hmt=mapW[mp]-1;
                 dof = 8;
                 disH = cos(degToRad(ra)) * (rx - px) - sin(degToRad(ra)) * (ry - py); // hit
             } else {
@@ -329,23 +329,9 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
         SDL_RenderFillRect(*renderer, &wall); // draw vertical wall
         ty += ty_step;
         }
-
-        // for (y = 0; y < lineH; y++)
-        // {
-        //     float c = All_Textures[(int)(ty) * 32];
-        //     Uint8 gray = (Uint8)(c * 255);
-
-        //     SDL_SetRenderDrawColor(*renderer, gray, gray, gray, 255);
-        //     SDL_Rect pointRect = { r * 8 + 530, y + lineOff, 8, lineH };
-        //     SDL_RenderFillRect(*renderer, &pointRect);
-
-        //     ty += ty_step;
-        // }
-
         ra = FixAng(ra - 1);
     }
 }
-
 
 
 void DrawMap(SDL_Renderer **Renderer)
@@ -361,7 +347,7 @@ void DrawMap(SDL_Renderer **Renderer)
     {
         for (x = 0; x < mapX; x++)
         {
-            if(map[y*mapX+x] == 1)
+            if(mapW[y*mapX+x] > 0)
                 SDL_SetRenderDrawColor(*Renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
             else
                 SDL_SetRenderDrawColor(*Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -517,10 +503,10 @@ int main(int argc, char *argv[])
 
         if (upArrowDown)
         {
-            if (map[ipy * mapX + ipx_add_xo] == 0) {
+            if (mapW[ipy * mapX + ipx_add_xo] == 0) {
                 px += pdx * 0.2 * fps;
             }
-            if (map[ipy_add_yo * mapX + ipx] == 0) {
+            if (mapW[ipy_add_yo * mapX + ipx] == 0) {
                 py += pdy * 0.2 * fps;
             }
         }
@@ -533,10 +519,10 @@ int main(int argc, char *argv[])
         }
         if (downArrowDown)
         {
-            if (map[ipy * mapX + ipx_sub_xo] == 0) {
+            if (mapW[ipy * mapX + ipx_sub_xo] == 0) {
                 px -= pdx * 0.2 * fps;
             }
-            if (map[ipy_sub_yo * mapX + ipx] == 0) {
+            if (mapW[ipy_sub_yo * mapX + ipx] == 0) {
                 py -= pdy * 0.2 * fps;
             }
         }
