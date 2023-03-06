@@ -35,6 +35,28 @@ int mapW[] =
     1, 0, 0, 0, 0, 0, 0, 1,
     1, 1, 1, 1, 1, 1, 1, 1,
 };
+int mapF[] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+};
+int mapC[] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+};
 
 int All_Textures[]=               //all 32x32 textures
 {
@@ -286,6 +308,7 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
         }
         int lineOff = 160 - (lineH >> 1);
 
+        //draw walls
         int y;
         float shade = 1;
         if(wall_angle)
@@ -329,6 +352,40 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
         SDL_RenderFillRect(*renderer, &wall); // draw vertical wall
         ty += ty_step;
         }
+
+        //Draw floors
+        for (y=lineOff+lineH; y<320; y++)
+        {
+            float dy=y-(320/2.0), deg=degToRad(ra), raFix=cos(degToRad(FixAng(pa-ra)));
+            tx=px/2 + cos(deg) * 158 * 32/dy/raFix;
+            ty=py/2 -sin(deg) * 158 * 32/dy/raFix;
+            int mp = mapF[(int)(ty/32.0)*mapX+(int)(tx/32.0)] * 32 *32;
+            float c=All_Textures[((int)(ty)&31)*32 + ((int)(tx)&31) + mp] * 0.7;
+            SDL_SetRenderDrawColor(*renderer, c * 255, c * 127, c * 127, SDL_ALPHA_OPAQUE);
+            SDL_Rect floor = {r * 8 + 530, y, 8, 1};
+            SDL_RenderFillRect(*renderer, &floor);
+
+
+            //draw ceiling
+            mp = mapC[(int)(ty/32.0)*mapX+(int)(tx/32.0)] * 32 *32;
+            c = All_Textures[((int)(ty)&31)*32 + ((int)(tx)&31) + mp] * 0.7;
+            SDL_SetRenderDrawColor(*renderer, c * 255, c * 127, c * 127, SDL_ALPHA_OPAQUE);
+            SDL_Rect ceiling = {r * 8 + 530, 320 - y, 8, 1};
+            SDL_RenderFillRect(*renderer, &ceiling);
+        }
+
+        //Draw Ceiling
+        // for (y=lineOff+lineH; y<320; y++)
+        // {
+        //     float dy=y-(320/2.0), deg=degToRad(ra), raFix=cos(degToRad(FixAng(pa-ra)));
+        //     tx=px/2 + cos(deg) * 158 * 32/dy/raFix;
+        //     ty=py/2 -sin(deg) * 158 * 32/dy/raFix;
+        //     float c=All_Textures[((int)(ty)&31)*32 + ((int)(tx)&31)] * 0.7;
+        //     SDL_SetRenderDrawColor(*renderer, c * 255, c * 127, c * 127, SDL_ALPHA_OPAQUE);
+        //     SDL_Rect floor = {r * 8 + 530, y, 8, 1};
+        //     SDL_RenderFillRect(*renderer, &floor);
+        // }
+
         ra = FixAng(ra - 1);
     }
 }
@@ -413,6 +470,7 @@ int main(int argc, char *argv[])
     int leftArrowDown = 0;
     int downArrowDown = 0;
     int rightArrowDown = 0;
+    int ArrowE = 0;
     float px, py, pdx, pdy, pa;
     float frame1, frame2, fps;
 
@@ -454,6 +512,10 @@ int main(int argc, char *argv[])
                 {
                 rightArrowDown = 1;
                 }
+                else if (event.key.keysym.scancode == SDL_SCANCODE_E)
+                {
+                ArrowE = 1;
+                }
             }
              else if (event.type == SDL_KEYUP)
             {
@@ -472,6 +534,10 @@ int main(int argc, char *argv[])
                 else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
                 {
                 rightArrowDown = 0;
+                }
+                else if (event.key.keysym.scancode == SDL_SCANCODE_E)
+                {
+                ArrowE = 0;
                 }
             }
         }
@@ -532,6 +598,32 @@ int main(int argc, char *argv[])
             pa = FixAng(pa);
             pdx = cos(degToRad(pa));
             pdy = -sin(degToRad(pa));
+        }
+        if (ArrowE)
+        {
+            int xo = 0;
+            if (pdx < 0) {
+                xo = -25;
+            } else {
+                xo = 25;
+            }
+
+            int yo = 0;
+            if (pdy < 0) {
+                yo = -25;
+            } else {
+                yo = 25;
+            }
+            int ipx = px / 64.0;
+            int ipx_add_xo = (px + xo) / 64.0;
+
+            int ipy = py / 64.0;
+            int ipy_add_yo = (py + yo) / 64.0;
+
+            if(mapW[ipy_add_yo*mapX+ipx_add_xo] == 4)
+            {
+                mapW[ipy_add_yo*mapX+ipx_add_xo] = 0;
+            }
         }
         ClearBackground(&Renderer);
         DrawMap(&Renderer);
