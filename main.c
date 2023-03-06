@@ -32,9 +32,9 @@ int mapW[] =
     3, 0, 0, 4, 0, 0, 0, 5,
     2, 0, 0, 2, 0, 0, 0, 5,
     2, 2, 3, 2, 0, 0, 0, 5,
-    6, 0, 0, 0, 0, 2, 0, 5,
-    3, 0, 1, 0, 0, 0, 0, 5,
-    2, 2, 3, 5, 2, 3, 5, 2,
+    2, 0, 0, 0, 0, 2, 0, 2,
+    3, 0, 1, 0, 0, 0, 0, 2,
+    2, 2, 3, 2, 2, 3, 2, 2,
 };
 int mapF[] =
 {
@@ -206,16 +206,30 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
             tx=px/2 + cos(deg) * 158 * 32/dy/raFix;
             ty=py/2 -sin(deg) * 158 * 32/dy/raFix;
             int mp = mapF[(int)(ty/32.0)*mapX+(int)(tx/32.0)] * 32 *32;
-            float c=All_Textures[((int)(ty)&31)*32 + ((int)(tx)&31) + mp] * 0.7;
-            SDL_SetRenderDrawColor(*renderer, c * 255, c * 127, c * 127, SDL_ALPHA_OPAQUE);
+            // float c=All_Textures[((int)(ty)&31)*32 + ((int)(tx)&31) + mp] * 0.7;
+            // SDL_SetRenderDrawColor(*renderer, c * 255, c * 127, c * 127, SDL_ALPHA_OPAQUE);
+            // SDL_Rect floor = {r * 8 + 530, y, 8, 1};
+            // SDL_RenderFillRect(*renderer, &floor) ;
+            int pixel = (((int)(ty)&31)*32 + ((int)(tx)&31)) * 3 + mp * 3;
+            int red = All_Textures[pixel + 0]*0.7;
+            int green = All_Textures[pixel + 1] * 0.7;
+            int blue = All_Textures[pixel + 2]*0.7;
+            SDL_SetRenderDrawColor(*renderer, red, green, blue, SDL_ALPHA_OPAQUE);
             SDL_Rect floor = {r * 8 + 530, y, 8, 1};
             SDL_RenderFillRect(*renderer, &floor);
 
 
             //draw ceiling
-            mp = mapC[(int)(ty/32.0)*mapX+(int)(tx/32.0)] * 32 *32;
-            c = All_Textures[((int)(ty)&31)*32 + ((int)(tx)&31) + mp] * 0.7;
-            SDL_SetRenderDrawColor(*renderer, c * 255, c * 127, c * 127, SDL_ALPHA_OPAQUE);
+            // mp = mapC[(int)(ty/32.0)*mapX+(int)(tx/32.0)] * 32 *32;
+            // c = All_Textures[((int)(ty)&31)*32 + ((int)(tx)&31) + mp] * 0.7;
+            // SDL_SetRenderDrawColor(*renderer, c * 255, c * 127, c * 127, SDL_ALPHA_OPAQUE);
+            // SDL_Rect ceiling = {r * 8 + 530, 320 - y, 8, 1};
+            // SDL_RenderFillRect(*renderer, &ceiling);
+            pixel = (((int)(ty)&31)*32 + ((int)(tx)&31)) * 3 + mp * 3;
+            red = All_Textures[pixel + 0]*0.7;
+            green = All_Textures[pixel + 1] * 0.7;
+            blue = All_Textures[pixel + 2]*0.7;
+            SDL_SetRenderDrawColor(*renderer, red, green, blue, SDL_ALPHA_OPAQUE);
             SDL_Rect ceiling = {r * 8 + 530, 320 - y, 8, 1};
             SDL_RenderFillRect(*renderer, &ceiling);
         }
