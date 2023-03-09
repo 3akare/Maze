@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <math.h>
 #include "All_Textures.ppm"
+#include "sky.ppm"
 
 #define WIDTH 1024
 #define HEIGHT 1024
@@ -53,9 +54,9 @@ int mapC[] =
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 2, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 3, 0, 0, 0,
+    0, 0, 0, 0, 3, 0, 0, 0,
+    0, 0, 0, 0, 3, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
 };
 
@@ -187,7 +188,7 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
         tx = 31 - tx;
         }
         }
-
+        //draw walls
         for (y = 0; y < lineH; y++) {
             int pixel = ((int)ty * 32 + (int)tx) * 3 + (hmt * 32 *32 * 3);
             int red = All_Textures[pixel + 0] * shade;
@@ -229,14 +230,50 @@ void ray_casting(SDL_Renderer **renderer, float px, float py, float pa) {
             red = All_Textures[pixel + 0]*0.7;
             green = All_Textures[pixel + 1] * 0.7;
             blue = All_Textures[pixel + 2]*0.7;
-            SDL_SetRenderDrawColor(*renderer, red, green, blue, SDL_ALPHA_OPAQUE);
-            SDL_Rect ceiling = {r * 8 + 530, 320 - y, 8, 1};
-            SDL_RenderFillRect(*renderer, &ceiling);
+            if (mp > 0)
+            {
+                SDL_SetRenderDrawColor(*renderer, red, green, blue, SDL_ALPHA_OPAQUE);
+                SDL_Rect ceiling = {r * 8 + 530, 320 - y, 8, 1};
+                SDL_RenderFillRect(*renderer, &ceiling);
+            }
         }
 
         ra = FixAng(ra - 1);
     }
 }
+
+void draw_sky(SDL_Renderer **renderer, float pa)
+{
+    // Create a texture for the sky
+    SDL_Surface* sky_surface = SDL_CreateRGBSurface(0, 120, 40, 32, 0, 0, 0, 0);
+    SDL_Texture* sky_texture = SDL_CreateTexture(*renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, 120, 40);
+
+    // Fill the texture with the sky color values
+    Uint32* pixels = (Uint32*)sky_surface->pixels;
+    for (int y = 0; y < 40; y++) {
+        for (int x = 0; x < 120; x++) {
+            int xo = (int)pa * 2 - x; 
+            if (xo < 0) { xo += 120; }
+            xo = xo % 120;
+            int pixel = (y * 120 + xo) * 3;
+            Uint32 color = SDL_MapRGB(sky_surface->format, sky[pixel + 0], sky[pixel + 1], sky[pixel + 2]);
+            *(pixels + y * 120 + x) = color;
+        }
+    }
+
+    // Update the sky texture with the pixel data
+    SDL_UpdateTexture(sky_texture, NULL, sky_surface->pixels, sky_surface->pitch);
+
+    // Render the sky texture
+    SDL_Rect sky_rect = { 530, 0, 480, 160 };
+    SDL_RenderCopy(*renderer, sky_texture, NULL, &sky_rect);
+
+    // Free the sky texture and surface
+    SDL_DestroyTexture(sky_texture);
+    SDL_FreeSurface(sky_surface);
+}
+
+
 
 
 void DrawMap(SDL_Renderer **Renderer)
@@ -476,6 +513,7 @@ int main(int argc, char *argv[])
         ClearBackground(&Renderer);
         DrawMap(&Renderer);
         DrawPlayer(&Renderer, px, py, pdx, pdy, pa);
+        draw_sky(&Renderer, pa);
         ray_casting(&Renderer, px, py, pa);      
         SDL_RenderPresent(Renderer);
     }
