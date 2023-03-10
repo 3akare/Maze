@@ -1,5 +1,17 @@
 #include "main.h"
 
+int mapW[]=           //the map array. Edit to change level but keep the outer walls
+{
+ 1,1,1,1,1,1,1,1,
+ 1,0,1,0,0,0,0,1,
+ 1,0,1,0,0,0,0,1,
+ 1,0,1,0,0,0,0,1,
+ 1,0,0,0,0,0,0,1,
+ 1,0,0,0,0,1,0,1,
+ 1,0,0,0,0,0,0,1,
+ 1,1,1,1,1,1,1,1,	
+};
+
 
 /**
  * OpenGl_init - Initialize OpenGL
@@ -33,7 +45,7 @@ void init(float px, float py, float pa, float pdy, float pdx)
 
 /**
  * degToRad - Converts angles from deg to rad
- * a; int
+ * a: int
  * Return: float
  */
 
@@ -43,6 +55,43 @@ float degToRad(int a)
 }
 
 /**
+ * display - draws map and rays
+ */
+
+void display(void)
+{
+	/* Clear the buffer */
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	drawMap2D();
+	// drawRays2D();
+	glutSwapBuffers(); /* push data from back buffer to the front buffer */
+}
+
+void drawMap2D()
+{
+	int x, y, xo, yo;
+
+	for (y = 0; y < mapX; y++)
+	{
+		for (x = 0; x < mapX; x++)
+		{
+			if (mapW[y * mapX + x] == 1)
+				glColor3f(1, 1, 1); /* if 1 draw a white box */
+			else
+				glColor3f(0, 0, 0); /* else draw a black box */
+			xo = x * mapS;
+			yo = y * mapS;
+			/* Set Dimensions of the Map */
+			glBegin(GL_QUADS);
+			glVertex2i(0 + xo + 1, 0 + yo + 1);
+			glVertex2i(0 + xo + 1, mapS + yo -1);
+			glVertex2i(mapS + xo - 1, mapS + yo - 1);
+			glVertex2i(mapS + xo- 1, 0 + yo + 1);
+			glEnd();
+		}
+	}
+}
+/**
  * main - Main Entry Point
  * @argc: Commandline Count
  * @argv: Commandline Values
@@ -50,14 +99,14 @@ float degToRad(int a)
  * Return: Always Successful
  */
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
 	float px, py, pa, pdy, pdx;
 	glutInit(&argc, argv); /* Initialize OpenGL */
 	OpenGl_init();
 	init(px, py, pa, pdx, pdy);
 	glutDisplayFunc(display); /* handles all display functions */
-	glutKeyboardFunc(Buttons); /* handles all pressed keys */
+	// glutKeyboardFunc(Buttons); /* handles all pressed keys */
 	glutMainLoop(); /* main game loop */
 	return (true);
 }
