@@ -1,4 +1,5 @@
 #include "main.h"
+float px, py, pa, pdy, pdx;
 
 int mapW[]=           //the map array. Edit to change level but keep the outer walls
 {
@@ -32,7 +33,7 @@ void OpenGl_init(void)
  * pdy:  float
  * pdx: float 
  */
-void init(float px, float py, float pa, float pdy, float pdx)
+void init(void)
 {
 	glClearColor(0.3, 0.3, 0.3, 0); /* clear and set screen to grey */
 	gluOrtho2D(0, WID, HEI, 0);
@@ -54,6 +55,7 @@ float degToRad(int a)
 	return (a * M_PI/180.0);
 }
 
+
 /**
  * display - draws map and rays
  */
@@ -63,8 +65,28 @@ void display(void)
 	/* Clear the buffer */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	drawMap2D();
-	// drawRays2D();
+	drawPlayer();
+	drawRays2D();
 	glutSwapBuffers(); /* push data from back buffer to the front buffer */
+}
+
+void drawPlayer()
+{
+	/* Set Point and Line color to Yellow */
+	glColor3f(1, 1, 0);
+	/* Set point size to 8px */
+	glPointSize(8);
+	/* Set line width to 4px */
+	glLineWidth(4);
+	glBegin(GL_POINTS);
+	/* Draw point (to signify player) */
+	glVertex2i(px, py);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex2i(px, py);
+	/* Draw Line (to signify player's direction) */
+	glVertex2i(px + pdx * 20, py + pdy * 20);
+	glEnd();
 }
 
 void drawMap2D()
@@ -91,6 +113,52 @@ void drawMap2D()
 		}
 	}
 }
+
+/**
+ * FixAng - reset @a to 0, when it less than 0 or above 359
+ * @a: int
+ * Return: float
+ */
+
+float FixAng(int a)
+{
+	if (a > 359)
+		a -= 360;
+	if (a < 0)
+		a += 360;
+	return (a);
+}
+
+void buttons(unsigned char key, int x, int y)
+{
+	if (key == 'a')
+	{
+		pa += SPEED;
+		pa = FixAng(pa);
+		pdx = cos(degToRad(pa));
+		pdy = -sin(degToRad(pa));
+	}
+	if (key == 'd')
+	{
+		pa -= SPEED;
+		pa = FixAng(pa);
+		pdx = cos(degToRad(pa));
+		pdy = -sin(degToRad(pa));
+	}
+	if (key == 'w')
+	{
+		px += pdx * SPEED;
+		py += pdy * SPEED;
+	}
+	if (key == 's')
+	{
+		px -= pdx * SPEED;
+		py -= pdy * SPEED;
+	}
+	glutPostRedisplay();
+	/* repost new frame (player position) after key is pressed */
+}
+
 /**
  * main - Main Entry Point
  * @argc: Commandline Count
@@ -101,12 +169,11 @@ void drawMap2D()
 
 int main(int argc, char *argv[])
 {
-	float px, py, pa, pdy, pdx;
 	glutInit(&argc, argv); /* Initialize OpenGL */
 	OpenGl_init();
-	init(px, py, pa, pdx, pdy);
+	init();
 	glutDisplayFunc(display); /* handles all display functions */
-	// glutKeyboardFunc(Buttons); /* handles all pressed keys */
+	glutKeyboardFunc(buttons); /* handles all pressed keys */
 	glutMainLoop(); /* main game loop */
 	return (true);
 }
