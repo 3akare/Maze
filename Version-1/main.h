@@ -17,6 +17,22 @@
 #define HEI  512 /* window height */
 #define XPOS (WID / 4)
 #define YPOS (HEI / 4)
+#define mapX 8 /* Map width */
+#define mapY 8 /* Map height */
+#define mapS 64 /* Map Cubic Size */
+#define SPEED 10 /* Player speed */
 
+float px, py, pa, pdy, pdx;
+
+void OpenGl_init(void);
+void init(void);
+float degToRad(int a);
+float FixAng(int a);
+void display(void);
+void drawPlayer(void);
+void drawMap2D(void);
+void drawRays2D(void);
+void RaySetUp(void);
+void buttons(unsigned char key, int x, int y);
 
 #endif
