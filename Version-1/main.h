@@ -34,5 +34,5 @@ void drawMap2D(void);
 void drawRays2D(void);
 void RaySetUp(void);
 void buttons(unsigned char key, int x, int y);
-
+void draw(float disV, float disH, int rx, int ry, int vx, int vy, int ra, int ca, int lineH, int lineOff, int r);
 #endif
