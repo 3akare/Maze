@@ -29,7 +29,7 @@ void drawPlayer(void)
 	glLineWidth(4);
 	glBegin(GL_POINTS);
 	/* Draw point (to signify player) */
-	lVertex2i(px, py);
+	glVertex2i(px, py);
 	glEnd();
 	glBegin(GL_LINES);
 	glVertex2i(px, py);
@@ -75,4 +75,51 @@ void drawMap2D(void)
 			glEnd();
 		}
 	}
+}
+
+#include "main.h"
+
+/**
+ * draw - Draws rays of raycaster
+ * @disH: float
+ * @disV: float
+ * @rx: int
+ * @ry: int
+ * @vx: int
+ * @vy: int
+ * @ra: int
+ * @ca: int
+ * @lineH: int
+ * @lineOff: int
+ * @r: int
+*/
+
+void draw(float disV, float disH, int rx, int ry, int vx, int vy, int ra, int ca, int lineH, int lineOff, int r)
+{
+	glColor3f(0, 0.8, 0);
+	if (disV < disH)
+	{
+		rx = vx;
+		ry = vy;
+		disH = disV;
+		glColor3f(0, 0.6, 0);
+	} /* horizontal hit first */
+	glLineWidth(2);
+	glBegin(GL_LINES);
+	glVertex2i(px, py);
+	glVertex2i(rx, ry);
+	glEnd(); /* draw 2D ray */
+	ca = FixAng(pa - ra);
+	disH = disH * cos(degToRad(ca)); /* fix fisheye */
+	lineH = (mapS * 320) / (disH);
+	if (lineH > 320)
+	{
+		lineH = 320;
+	} /* line height and limit */
+	lineOff = 160 - (lineH >> 1); /* line offset */
+	glLineWidth(8);
+	glBegin(GL_LINES);
+	glVertex2i(r * 8 + 530, lineOff);
+	glVertex2i(r * 8 + 530, lineOff + lineH);
+	glEnd(); /* draw vertical wall */
 }
