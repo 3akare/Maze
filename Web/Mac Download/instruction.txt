@@ -1,0 +1,6 @@
+Welcome to the exciting world of the Maze Game for MacOS!
+
+To begin your adventure, simply open the a.out file using your terminal.
+You can do this by navigating to the folder where the file is located and typing "./a.out" into the terminal, then hitting enter.
+
+Alternatively, you can simply drag and drop the a.out file onto the terminal icon, and the game will launch automatically. Get ready to navigate through a labyrinthine world full of challenges and excitement - the fun is just beginning!
