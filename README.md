@@ -43,10 +43,10 @@ The game contains six folders, each with its own specific functionality:
 <b>Version-3:</b> This is the current version of the game, and it includes even better textures, a lose and win state, and an enemy sprite. In this version, the player must navigate through the maze while avoiding the enemy to win.
 
 ## Author
-This game was created by David Bakare. David is a skilled game developer with experience in building exciting games using various programming languages and libraries.
+This game was created by David Bakare. 
 
 ## Acknowledgments
-3dSage was a significant source of inspiration for this game. The creator of 3dSage provides useful resources and tutorials for game developers, and their content was instrumental in the development of this game.
+[3dSage](./https://www.youtube.com/channel/UCjdHbo8_vh3rxQ-875XGkvw) was a significant source of inspiration for this game. The creator of 3dSage provides useful resources and tutorials for game developers, and their content was instrumental in the development of this game.
 
 ## License
 This project is licensed under the MIT License. You are free to modify and distribute the game, as long as you give proper credit to the author. The game is open-source, and you are encouraged to contribute to its development by visiting the GitHub repository and submitting pull requests.
